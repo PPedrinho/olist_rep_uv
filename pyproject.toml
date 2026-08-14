@@ -17,12 +17,13 @@ classifiers = [
 ]
 dependencies = [
     "ipython",
+    "ipywidgets>=8.1.8",
     "jupyterlab",
     "loguru",
     "matplotlib",
     "mkdocs",
     "notebook",
-    "numpy",
+    "numpy==2.3",
     "pandas",
     "pip",
     "pytest",
@@ -30,6 +31,7 @@ dependencies = [
     "ruff",
     "scikit-learn",
     "seaborn>=0.13.2",
+    "setuptools==81.0.0",
     "tqdm",
     "typer",
 ]
