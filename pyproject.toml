@@ -25,6 +25,7 @@ dependencies = [
     "notebook",
     "numpy==2.3",
     "pandas",
+    "pandera>=0.32.1",
     "pip",
     "pytest",
     "python-dotenv",
