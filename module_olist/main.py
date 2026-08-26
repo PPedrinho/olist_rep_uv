@@ -8,6 +8,10 @@ from module_olist.dataset import (
 )
 from module_olist.features import create_features
 
+from module_olist.modeling.split import split_data
+from module_olist.modeling.train import train_models
+from module_olist.modeling.evaluate import evaluate_models
+
 
 def main():
     logger.info("Iniciando preparação dos dados...")
@@ -25,6 +29,19 @@ def main():
     )
 
     data = create_features(data)
+
+    X_train, X_test, y_train, y_test = split_data(data)
+
+    models = train_models(
+        X_train,
+        y_train
+    )
+
+    evaluate_models(
+        models,
+        X_test,
+        y_test
+)
 
     output_path = INTERIM_DATA_DIR / "orders_dataset_improved.csv"
 
