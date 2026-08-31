@@ -14,6 +14,7 @@ from module_olist.features import create_features
 from module_olist.modeling.split import split_data
 from module_olist.modeling.train import train_models
 from module_olist.modeling.evaluate import evaluate_models
+from module_olist.modeling.cross_validation import cross_validate_models
 
 
 def main():
@@ -40,6 +41,11 @@ def main():
     )
 
     X_train, X_test, y_train, y_test = split_data(data)
+
+    cv_results = cross_validate_models(
+    X_train,
+    y_train
+)
 
     models = train_models(
         X_train,
