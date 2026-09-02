@@ -1,5 +1,11 @@
 from loguru import logger
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import (
+    confusion_matrix,
+    precision_score,
+    recall_score,
+    f1_score,
+    roc_auc_score
+)
 
 from module_olist.config import RAW_DATA_DIR, INTERIM_DATA_DIR
 
@@ -13,7 +19,6 @@ from module_olist.features import create_features
 
 from module_olist.modeling.split import split_data
 from module_olist.modeling.train import train_models
-from module_olist.modeling.evaluate import evaluate_models
 from module_olist.modeling.cross_validation import cross_validate_models
 
 
@@ -42,37 +47,107 @@ def main():
 
     X_train, X_test, y_train, y_test = split_data(data)
 
-    cv_results = cross_validate_models(
-    X_train,
-    y_train
-)
+    best_model_name, best_threshold = cross_validate_models(
+        X_train,
+        y_train
+    )
+
+    logger.success(
+        f"Modelo selecionado pela Cross Validation: {best_model_name}"
+    )
+
+    logger.info(
+        f"Threshold selecionado: {best_threshold:.2f}"
+    )
 
     models = train_models(
         X_train,
         y_train
     )
 
-    evaluate_models(
-        models,
-        X_test,
-        y_test
+    model = models[best_model_name]
+
+    y_proba = model.predict_proba(
+        X_test
+    )[:, 1]
+
+    y_pred = (
+        y_proba >= best_threshold
+    ).astype(int)
+
+    precision = precision_score(
+        y_test,
+        y_pred,
+        zero_division=0
     )
 
-    model = models["LightGBM"]
+    recall = recall_score(
+        y_test,
+        y_pred,
+        zero_division=0
+    )
 
-    y_proba = model.predict_proba(X_test)[:, 1]
+    f1 = f1_score(
+        y_test,
+        y_pred,
+        zero_division=0
+    )
 
-    y_pred = (y_proba >= 0.13).astype(int)
+    roc_auc = roc_auc_score(
+        y_test,
+        y_proba
+    )
 
     TN, FP, FN, TP = confusion_matrix(
         y_test,
         y_pred
     ).ravel()
 
-    logger.info(f"TN: {TN}")
-    logger.info(f"FP: {FP}")
-    logger.info(f"FN: {FN}")
-    logger.info(f"TP: {TP}")
+    logger.info("AVALIAÇÃO FINAL NO TESTE")
+
+    logger.info(
+        f"Modelo: {best_model_name}"
+    )
+
+    logger.info(
+        f"Threshold: {best_threshold:.2f}"
+    )
+
+    logger.info(
+        f"Precision: {precision:.3f}"
+    )
+
+    logger.info(
+        f"Recall: {recall:.3f}"
+    )
+
+    logger.info(
+        f"F1: {f1:.3f}"
+    )
+
+    logger.info(
+        f"ROC-AUC: {roc_auc:.3f}"
+    )
+
+    logger.info(
+        f"TN: {TN}"
+    )
+
+    logger.info(
+        f"FP: {FP}"
+    )
+
+    logger.info(
+        f"FN: {FN}"
+    )
+
+    logger.info(
+        f"TP: {TP}"
+    )
+
+    logger.success(
+        "Pipeline executado com sucesso"
+    )
 
 
 if __name__ == "__main__":
