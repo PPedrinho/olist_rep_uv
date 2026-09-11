@@ -7,6 +7,7 @@ warnings.filterwarnings("ignore")
 
 from loguru import logger
 
+from module_olist.explain import explain_model
 
 from module_olist.config import (
     RAW_DATA_DIR,
@@ -162,6 +163,15 @@ def main():
         "Modelo e metadata salvos com sucesso"
     )
 
+    logger.info(
+    "Iniciando interpretação do modelo..."
+    )
+
+    explain_model()
+
+    logger.success(
+        "Interpretação concluída!"
+    )
 
     logger.success(
         "Treinamento finalizado!"
