@@ -1,34 +1,31 @@
 # Olist
 
 <a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
-
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
-
 </a>
 
 br e-commerce public dataset
 
----
-
-## Project Organization
+# Project Organization
 
 ```
 ├── LICENSE
 ├── Makefile
 ├── README.md
+│
 ├── data
-│   ├── external
-│   ├── interim
-│   ├── processed
-│   └── raw
+│   ├── external          <- Data from third party sources
+│   ├── interim           <- Intermediate processed datasets
+│   ├── processed         <- Final datasets for modeling
+│   └── raw               <- Original raw datasets
 │
 ├── docs
 │
 ├── models
 │   │
-│   ├── best_model.joblib        <- Modelo final treinado
-│   ├── metadata.json            <- Informações do modelo e threshold
-│   └── olist_model.pkl          <- Modelo antigo
+│   ├── best_model.joblib <- Final trained model
+│   ├── metadata.json     <- Model information and threshold
+│   └── olist_model.pkl   <- Previous model version
 │
 ├── notebooks
 │
@@ -37,7 +34,7 @@ br e-commerce public dataset
 ├── references
 │
 ├── reports
-│   └── figures                <- Gráficos e resultados gerados
+│   └── figures           <- Generated graphics and reports
 │
 ├── requirements.txt
 │
@@ -47,54 +44,54 @@ br e-commerce public dataset
     │
     ├── __init__.py
     │
-    ├── config.py                <- Configurações e caminhos do projeto
+    ├── config.py              <- Project configurations and paths
     │
-    ├── dataset.py               <- Carregamento e preparação dos dados
+    ├── dataset.py             <- Data loading and dataset creation
     │
-    ├── features.py              <- Criação das features utilizadas no modelo
+    ├── features.py             <- Feature engineering
     │
-    ├── inference.py             <- Execução de inferência utilizando modelo treinado
+    ├── main.py                <- Main machine learning pipeline
     │
-    ├── explain.py               <- Geração da explicabilidade utilizando SHAP
+    ├── inference.py           <- Model inference execution
     │
-    ├── plots.py                 <- Criação de visualizações
+    ├── explain.py             <- SHAP model interpretation
     │
-    ├── main.py                  <- Pipeline principal de treinamento
+    ├── plots.py               <- Visualization functions
     │
-    ├── teste.py                 <- Arquivo auxiliar para testes
+    ├── teste.py               <- Auxiliary tests
     │
     └── modeling
         │
         ├── __init__.py
         │
-        ├── pipeline.py          <- Construção dos pipelines dos modelos
+        ├── pipeline.py        <- Machine learning pipelines
         │
-        ├── train.py             <- Treinamento dos modelos
+        ├── train.py           <- Model training
         │
-        ├── split.py             <- Separação treino/teste
+        ├── split.py           <- Train/test data split
         │
-        ├── cross_validation.py  <- Validação cruzada e escolha do modelo
+        ├── cross_validation.py <- Cross-validation and model selection
         │
-        ├── evaluate.py          <- Avaliação dos modelos
+        ├── evaluate.py        <- Model evaluation metrics
         │
-        ├── predict.py            <- Funções de carregamento e predição
+        ├── predict.py         <- Model loading and prediction functions
         │
-        └── interpret.py          <- Funções auxiliares para SHAP
+        └── interpret.py       <- SHAP helper functions
 ```
 
 ---
 
-# Execução do Projeto
+# Project Execution
 
-## 1. Preparação do ambiente
+## 1. Environment setup
 
-Instalar as dependências:
+Install project dependencies:
 
 ```powershell
 uv sync
 ```
 
-Verificar o ambiente:
+Verify Python environment:
 
 ```powershell
 uv run python --version
@@ -102,43 +99,43 @@ uv run python --version
 
 ---
 
-# 2. Treinamento do modelo
+# 2. Model training
 
-O treinamento completo deve ser executado através da:
+The complete training pipeline must be executed through:
 
 ```text
 module_olist.main
 ```
 
-Comando:
+Command:
 
 ```powershell
 uv run python -m module_olist.main
 ```
 
-A `main.py` executa o pipeline completo:
+The `main.py` executes the complete machine learning workflow:
 
 ```
-Carregamento dos dados brutos
-            ↓
-Criação do dataset
-            ↓
-Engenharia de features
-            ↓
-Separação treino/teste
-            ↓
+Raw data loading
+        ↓
+Dataset creation
+        ↓
+Feature engineering
+        ↓
+Train/test split
+        ↓
 Cross Validation
-            ↓
-Seleção do melhor modelo
-            ↓
-Treinamento final
-            ↓
-Salvar modelo treinado
-            ↓
-Salvar metadata
+        ↓
+Model selection
+        ↓
+Final training
+        ↓
+Model persistence
+        ↓
+Metadata generation
 ```
 
-Ao final da execução serão gerados:
+After execution, the following files are generated:
 
 ```
 models/
@@ -147,14 +144,14 @@ models/
 └── metadata.json
 ```
 
-O arquivo `best_model.joblib` contém o modelo final treinado.
+`best_model.joblib` contains the final trained model.
 
-O arquivo `metadata.json` contém:
+`metadata.json` contains:
 
-- nome do modelo escolhido;
-- threshold utilizado na classificação.
+- Selected model name;
+- Classification threshold.
 
-Exemplo:
+Example:
 
 ```json
 {
@@ -165,43 +162,43 @@ Exemplo:
 
 ---
 
-# 3. Inferência do modelo
+# 3. Model inference
 
-Após o treinamento, o modelo pode ser utilizado para realizar previsões sem necessidade de novo treinamento.
+After training, predictions can be generated without retraining the model.
 
-Comando:
+Command:
 
 ```powershell
 uv run python -m module_olist.inference
 ```
 
-O fluxo realizado é:
+The inference workflow:
 
 ```
-Dados de entrada
-        ↓
-Carregar modelo salvo
-        ↓
-Carregar threshold
-        ↓
-Gerar probabilidades
-        ↓
-Classificação final
+Input data
+      ↓
+Load trained model
+      ↓
+Load threshold
+      ↓
+Generate probabilities
+      ↓
+Generate final prediction
 ```
 
-O resultado apresenta:
+The output contains:
 
 ```
 prob_is_late
 prediction
 ```
 
-Onde:
+Where:
 
-- `prob_is_late`: probabilidade do pedido apresentar atraso;
-- `prediction`: classificação final utilizando o threshold definido.
+- `prob_is_late`: probability of order delay;
+- `prediction`: final classification based on the selected threshold.
 
-Exemplo:
+Example:
 
 ```
 prob_is_late     prediction
@@ -211,45 +208,45 @@ prob_is_late     prediction
 0.04             0
 ```
 
-Interpretação:
+Interpretation:
 
 ```
-0 → Pedido previsto como pontual
+0 → Order predicted as on time
 
-1 → Pedido previsto como atrasado
+1 → Order predicted as delayed
 ```
 
 ---
 
-# 4. Explicabilidade do modelo (SHAP)
+# 4. Model explainability (SHAP)
 
-A análise de explicabilidade deve ser executada após o treinamento do modelo.
+The explainability module should be executed after the model training.
 
-Comando:
+Command:
 
 ```powershell
 uv run python -m module_olist.explain
 ```
 
-O fluxo realizado é:
+The workflow:
 
 ```
-Carregar modelo treinado
-          ↓
-Preparar dados para SHAP
-          ↓
-Calcular valores SHAP
-          ↓
-Gerar gráficos de interpretação
+Load trained model
+        ↓
+Prepare data for SHAP
+        ↓
+Calculate SHAP values
+        ↓
+Generate interpretation plots
 ```
 
-O resultado será salvo em:
+The generated files are saved in:
 
 ```
 reports/figures/
 ```
 
-Exemplo:
+Example:
 
 ```
 reports/
@@ -259,128 +256,128 @@ reports/
     └── shap_summary.png
 ```
 
-O gráfico permite analisar:
+The SHAP analysis allows understanding:
 
-- quais variáveis possuem maior impacto no modelo;
-- como cada variável influencia a previsão;
-- quais características aumentam ou reduzem a probabilidade de atraso.
+- Most important variables for the model;
+- How each feature affects predictions;
+- Factors that increase or decrease delay probability.
 
 ---
 
-# 5. Fluxo recomendado de execução
+# Recommended Execution Flow
 
-## Primeira execução ou após alterações no modelo
+## Step 1 - Train the model
 
-Executar:
+Run:
 
 ```powershell
 uv run python -m module_olist.main
 ```
 
-Esse processo realiza:
+Responsible for:
 
-- preparação dos dados;
-- criação das features;
-- validação cruzada;
-- treinamento;
-- salvamento do modelo.
+- Data preparation;
+- Feature generation;
+- Cross validation;
+- Model training;
+- Saving trained model.
 
 ---
 
-## Para gerar previsões
+## Step 2 - Run inference
 
-Após o modelo existir:
+After the model is generated:
 
 ```powershell
 uv run python -m module_olist.inference
 ```
 
-Utilizado quando:
+Used when:
 
-- novos pedidos precisam ser avaliados;
-- deseja-se simular o ambiente de produção;
-- não é necessário realizar novo treinamento.
+- New orders need predictions;
+- The production scenario needs simulation;
+- Retraining is unnecessary.
 
 ---
 
-## Para interpretar o modelo
+## Step 3 - Generate model explanations
 
-Executar:
+Run:
 
 ```powershell
 uv run python -m module_olist.explain
 ```
 
-Utilizado quando:
+Used when:
 
-- deseja analisar importância das variáveis;
-- gerar explicações do modelo;
-- criar gráficos SHAP.
+- Understanding model decisions;
+- Analyzing feature importance;
+- Generating SHAP plots.
 
 ---
 
-# Fluxo geral do projeto
+# Complete Project Flow
 
 ```
-                 TREINAMENTO
+                 TRAINING
 
 main.py
 
-Dados brutos
-      ↓
+Raw Data
+    ↓
 Dataset
-      ↓
+    ↓
 Features
-      ↓
+    ↓
 Cross Validation
-      ↓
-Treinamento
-      ↓
+    ↓
+Training
+    ↓
 best_model.joblib
 metadata.json
 
 
-                 INFERÊNCIA
+                 INFERENCE
 
 inference.py
 
-Novos dados
-      ↓
-Modelo salvo
-      ↓
-Predict
-      ↓
-Resultado
+New Data
+    ↓
+Saved Model
+    ↓
+Prediction
+    ↓
+Classification
 
 
-                 EXPLICAÇÃO
+                 EXPLAINABILITY
 
 explain.py
 
-Modelo salvo
-      ↓
+Saved Model
+    ↓
 SHAP
-      ↓
-Interpretação
+    ↓
+Feature Interpretation
 ```
 
 ---
 
-# Resumo dos comandos
+# Main Commands
 
-## Treinar modelo
+## Train model
 
 ```powershell
 uv run python -m module_olist.main
 ```
 
-## Realizar inferência
+## Run inference
 
 ```powershell
 uv run python -m module_olist.inference
 ```
 
-## Gerar explicabilidade SHAP
+## Generate SHAP explanation
 
 ```powershell
 uv run python -m module_olist.explain
@@ -388,10 +385,10 @@ uv run python -m module_olist.explain
 
 ---
 
-# Observações
+# Notes
 
-- A `main.py` deve ser executada sempre que houver alterações nos dados, features, modelos ou parâmetros de treinamento.
-- O `inference.py` deve ser utilizado quando o modelo já estiver treinado e novas previsões forem necessárias.
-- O `explain.py` deve ser utilizado para interpretar o comportamento do modelo utilizando SHAP.
-- O modelo salvo em `models/best_model.joblib` permite realizar previsões sem executar novamente o treinamento.
-- O arquivo `olist_model.pkl` corresponde a uma versão anterior do modelo e pode ser removido caso não seja mais utilizado.
+- Execute `main.py` whenever there are changes in datasets, features, models, or training parameters.
+- Execute `inference.py` when the model is already trained and new predictions are required.
+- Execute `explain.py` to analyze model behavior using SHAP.
+- The saved model in `models/best_model.joblib` allows predictions without retraining.
+- The file `olist_model.pkl` represents an older model version and can be removed if no longer used.
