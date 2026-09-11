@@ -1,13 +1,19 @@
+import json
+import joblib
+
+import warnings
+
+warnings.filterwarnings("ignore")
+
 from loguru import logger
-from sklearn.metrics import (
-    confusion_matrix,
-    precision_score,
-    recall_score,
-    f1_score,
-    roc_auc_score
+
+
+from module_olist.config import (
+    RAW_DATA_DIR,
+    INTERIM_DATA_DIR,
+    MODELS_DIR
 )
 
-from module_olist.config import RAW_DATA_DIR, INTERIM_DATA_DIR
 
 from module_olist.dataset import (
     load_data,
@@ -15,16 +21,26 @@ from module_olist.dataset import (
     save_dataset
 )
 
+
 from module_olist.features import create_features
+
 
 from module_olist.modeling.split import split_data
 from module_olist.modeling.train import train_models
 from module_olist.modeling.cross_validation import cross_validate_models
 
 
+
 def main():
 
-    logger.info("Iniciando preparação dos dados...")
+    logger.info(
+        "Iniciando pipeline Olist..."
+    )
+
+
+    # ===============================
+    # Preparação dos dados
+    # ===============================
 
     orders, items, customers = load_data(
         orders_path=RAW_DATA_DIR / "olist_orders_dataset.csv",
@@ -32,122 +48,125 @@ def main():
         customers_path=RAW_DATA_DIR / "olist_customers_dataset.csv"
     )
 
+
     data = create_dataset(
         orders,
         items,
         customers
     )
 
-    data = create_features(data)
+
+    data = create_features(
+        data
+    )
+
 
     save_dataset(
         data,
-        INTERIM_DATA_DIR / "orders_dataset_improved.csv"
+        INTERIM_DATA_DIR /
+        "orders_dataset_refined.csv"
     )
 
-    X_train, X_test, y_train, y_test = split_data(data)
+
+    # ===============================
+    # Split
+    # ===============================
+
+    X_train, X_test, y_train, y_test = split_data(
+        data
+    )
+
+
+    # ===============================
+    # Cross Validation
+    # ===============================
 
     best_model_name, best_threshold = cross_validate_models(
         X_train,
         y_train
     )
 
+
     logger.success(
-        f"Modelo selecionado pela Cross Validation: {best_model_name}"
+        f"Modelo escolhido: {best_model_name}"
     )
 
     logger.info(
-        f"Threshold selecionado: {best_threshold:.2f}"
+        f"Threshold escolhido: {best_threshold:.2f}"
     )
+
+
+    # ===============================
+    # Treinamento final
+    # ===============================
 
     models = train_models(
         X_train,
         y_train
     )
 
-    model = models[best_model_name]
 
-    y_proba = model.predict_proba(
-        X_test
-    )[:, 1]
+    final_model = models[
+        best_model_name
+    ]
 
-    y_pred = (
-        y_proba >= best_threshold
-    ).astype(int)
 
-    precision = precision_score(
-        y_test,
-        y_pred,
-        zero_division=0
+    # ===============================
+    # Salvar modelo
+    # ===============================
+
+    MODELS_DIR.mkdir(
+        parents=True,
+        exist_ok=True
     )
 
-    recall = recall_score(
-        y_test,
-        y_pred,
-        zero_division=0
+
+    model_path = (
+        MODELS_DIR /
+        "best_model.joblib"
     )
 
-    f1 = f1_score(
-        y_test,
-        y_pred,
-        zero_division=0
+
+    metadata_path = (
+        MODELS_DIR /
+        "metadata.json"
     )
 
-    roc_auc = roc_auc_score(
-        y_test,
-        y_proba
+
+    joblib.dump(
+        final_model,
+        model_path
     )
 
-    TN, FP, FN, TP = confusion_matrix(
-        y_test,
-        y_pred
-    ).ravel()
 
-    logger.info("AVALIAÇÃO FINAL NO TESTE")
+    metadata = {
+        "model_name": best_model_name,
+        "threshold": float(best_threshold)
+    }
 
-    logger.info(
-        f"Modelo: {best_model_name}"
-    )
 
-    logger.info(
-        f"Threshold: {best_threshold:.2f}"
-    )
+    with open(
+        metadata_path,
+        "w",
+        encoding="utf-8"
+    ) as file:
 
-    logger.info(
-        f"Precision: {precision:.3f}"
-    )
+        json.dump(
+            metadata,
+            file,
+            indent=4
+        )
 
-    logger.info(
-        f"Recall: {recall:.3f}"
-    )
-
-    logger.info(
-        f"F1: {f1:.3f}"
-    )
-
-    logger.info(
-        f"ROC-AUC: {roc_auc:.3f}"
-    )
-
-    logger.info(
-        f"TN: {TN}"
-    )
-
-    logger.info(
-        f"FP: {FP}"
-    )
-
-    logger.info(
-        f"FN: {FN}"
-    )
-
-    logger.info(
-        f"TP: {TP}"
-    )
 
     logger.success(
-        "Pipeline executado com sucesso"
+        "Modelo e metadata salvos com sucesso"
     )
+
+
+    logger.success(
+        "Treinamento finalizado!"
+    )
+
 
 
 if __name__ == "__main__":
